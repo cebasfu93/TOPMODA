@@ -9,7 +9,7 @@ parser.add_option("-o", "--out", action="store", type='string', dest="OutputFile
 (options, args)= parser.parse_args()
 inname_opt=options.InputFile
 outname_opt=options.OutputFile
-
+last_char=-34
 def renum(gro_file_func):
     gro_file=np.genfromtxt(gro_file_func, delimiter="\n", dtype="str")
     out_file=open(outname_opt, "a")
@@ -30,17 +30,17 @@ def renum(gro_file_func):
                 res_act="PA"
                 if res_act!=res_prev:
                     residue+=1
-                out_file.write(str(residue).rjust(5)+"PA".ljust(5)+line_act[-58:]+"\n")
+                out_file.write(str(residue).rjust(5)+"PA".ljust(5)+line_act[last_char:]+"\n")
             elif "PC" in line_act:
                 res_act="PC"
                 if res_act!=res_prev:
                     residue+=1
-                out_file.write(str(residue).rjust(5)+"PC".ljust(5)+line_act[-58:]+"\n")
+                out_file.write(str(residue).rjust(5)+"PC".ljust(5)+line_act[last_char:]+"\n")
             elif "OL" in line_act:
                 res_act="OL"
                 if res_act!=res_prev:
                     residue+=1
-                out_file.write(str(residue).rjust(5)+"OL".ljust(5)+line_act[-58:]+"\n")
+                out_file.write(str(residue).rjust(5)+"OL".ljust(5)+line_act[last_char:]+"\n")
     out_file.close()
 
 renum(inname_opt)
