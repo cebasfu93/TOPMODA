@@ -11,7 +11,7 @@ parser.add_option("-o", "--out", action="store", type='string', dest="OutputFile
 (options, args)= parser.parse_args()
 inname_opt=options.InputFile
 ref_opt=options.Reference
-n_res_opt=int(options.TotRes)
+n_res_opt=int(options.TotRes) #Number of residues that are not SOL
 outname_opt=options.OutputFile
 
 def dhydrate(gro_file_func):
@@ -19,18 +19,16 @@ def dhydrate(gro_file_func):
     gro_file=np.genfromtxt(gro_file_func, dtype='str', delimiter="\n")
     N_gro=len(gro_file)
     save=0
-    atom=0
     Z_box_half=float(gro_file[-1].split()[2])/2.
     Z_up=np.array([])
     Z_down=np.array([])
-    for i in range(N_gro):
+    for i in range(N_gro-1):
         if "SOL" in gro_file[i]:
             save=i
             break
         if i==0 or i==1:
-            temp_file.write(gro_file[i]+"\n")
+            temp_file.write(gro_file[i] + "\n")
         else:
-            atom+=1
             temp_file.write(gro_file[i].rjust(44)+"\n")
             if ref_opt in gro_file[i]:
                 Z_val=float(gro_file[i].split()[-1])
@@ -40,27 +38,25 @@ def dhydrate(gro_file_func):
                     Z_down=np.append(Z_down, Z_val)
     lim_up=np.average(Z_up)
     lim_down=np.average(Z_down)
-    cont=1
+    cont=4
     delta=0
-    for i in range(save,N_gro):
+    atom=save-2
+    for i in range(save,N_gro-1):
         line_act=gro_file[i].split()
-        if i==(N_gro-1):
-            temp_file.write("\t"+gro_file[i]+"\n")
-        else:
-            Z_val = float(line_act[-1])
-            if (Z_val > lim_up or Z_val < lim_down) and delta%3==0:
-                next_line=gro_file[i+1].split()
-                next_line2=gro_file[i+2].split()
-                atom+=1
-                temp_file.write(str(n_res_opt+cont).rjust(5)+"SOL".ljust(5)+"OW".rjust(5)+str(atom%100000).rjust(5)+line_act[-3].rjust(8)+line_act[-2].rjust(8)+line_act[-1].rjust(8)+"\n")
-                atom+=1
-                temp_file.write(str(n_res_opt+cont).rjust(5)+"SOL".ljust(5)+"HW1".rjust(5)+str(atom%100000).rjust(5)+next_line[-3].rjust(8)+next_line[-2].rjust(8)+next_line[-1].rjust(8)+"\n")
-                atom+=1
-                temp_file.write(str(n_res_opt+cont).rjust(5)+"SOL".ljust(5)+"HW2".rjust(5)+str(atom%100000).rjust(5)+next_line2[-3].rjust(8)+next_line2[-2].rjust(8)+next_line2[-1].rjust(8)+"\n")
+        Z_val = float(line_act[-1])
+        if (Z_val > lim_up or Z_val < lim_down) and delta%3==0:
+            next_line=gro_file[i+1].split()
+            next_line2=gro_file[i+2].split()
+            atom+=1
+            temp_file.write(str(cont).rjust(5)+"SOL".ljust(5)+"OW".rjust(5)+str(atom%100000).rjust(5)+line_act[-3].rjust(8)+line_act[-2].rjust(8)+line_act[-1].rjust(8)+"\n")
+            atom+=1
+            temp_file.write(str(cont).rjust(5)+"SOL".ljust(5)+"HW1".rjust(5)+str(atom%100000).rjust(5)+next_line[-3].rjust(8)+next_line[-2].rjust(8)+next_line[-1].rjust(8)+"\n")
+            atom+=1
+            temp_file.write(str(cont).rjust(5)+"SOL".ljust(5)+"HW2".rjust(5)+str(atom%100000).rjust(5)+next_line2[-3].rjust(8)+next_line2[-2].rjust(8)+next_line2[-1].rjust(8)+"\n")
 
-                cont+=1
-            delta+=1
-
+            cont+=1
+        delta+=1
+    temp_file.write(gro_file[-1]+"\n")
     temp_file.close()
 
     temp_file=np.genfromtxt("temp.gro", dtype="str", delimiter="\n")
@@ -76,7 +72,7 @@ def dhydrate(gro_file_func):
     final_output.close()
     os.remove("temp.gro")
     print("The system has: "+str(cont-1+n_res_opt/3.)+ " residues")
-    print("The system has: "+str(cont-1)+ " water molecules. Change this to the top file")
+    print("The system has: "+str(cont-4)+ " water molecules. Change this to the top file")
     print("The system has a lipid:water ratio of: "+str((cont-1)/(n_res_opt/3)))
 
 dhydrate(inname_opt)
