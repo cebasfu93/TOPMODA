@@ -45,12 +45,13 @@ def dhydrate_CG():
         if rad > rad_opt and delta%3 == 0:
             next_line = gro_file[i+1].split()
             next_line2 = gro_file[i+2].split()
+            #cont=1 ########################################
             atom+=1
-            temp_file.write(str(cont).rjust(5) + "SOL".ljust(5) + "W".rjust(5) + str(atom%100000).rjust(5) + line_act[-3].rjust(8)+line_act[-2].rjust(8)+line_act[-1].rjust(8)+"\n")
+            temp_file.write(str(cont).rjust(5) + "PW".ljust(5) + "W".rjust(5) + str(atom%100000).rjust(5) + line_act[-3].rjust(8)+line_act[-2].rjust(8)+line_act[-1].rjust(8)+"\n")
             atom+=1
-            temp_file.write(str(cont).rjust(5) + "SOL".ljust(5) + "WP".rjust(5) + str(atom%100000).rjust(5) + next_line[-3].rjust(8)+next_line[-2].rjust(8)+next_line[-1].rjust(8)+"\n")
+            temp_file.write(str(cont).rjust(5) + "PW".ljust(5) + "WP".rjust(5) + str(atom%100000).rjust(5) + next_line[-3].rjust(8)+next_line[-2].rjust(8)+next_line[-1].rjust(8)+"\n")
             atom+=1
-            temp_file.write(str(cont).rjust(5) + "SOL".ljust(5) + "WM".rjust(5) + str(atom%100000).rjust(5) + next_line2[-3].rjust(8)+next_line2[-2].rjust(8)+next_line2[-1].rjust(8)+"\n")
+            temp_file.write(str(cont).rjust(5) + "PW".ljust(5) + "WM".rjust(5) + str(atom%100000).rjust(5) + next_line2[-3].rjust(8)+next_line2[-2].rjust(8)+next_line2[-1].rjust(8)+"\n")
 
             cont+=1
         delta += 1
