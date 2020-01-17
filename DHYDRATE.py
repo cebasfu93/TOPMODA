@@ -19,9 +19,7 @@ def dhydrate(gro_file_func):
     gro_file=np.genfromtxt(gro_file_func, dtype='str', delimiter="\n")
     N_gro=len(gro_file)
     save=0
-    Z_box_half=float(gro_file[-1].split()[2])/2.
-    Z_up=np.array([])
-    Z_down=np.array([])
+    Zetas = []
     for i in range(N_gro-1):
         if "SOL" in gro_file[i]:
             save=i
@@ -32,12 +30,10 @@ def dhydrate(gro_file_func):
             temp_file.write(gro_file[i].rjust(44)+"\n")
             if ref_opt in gro_file[i]:
                 Z_val=float(gro_file[i].split()[-1])
-                if Z_val>Z_box_half:
-                    Z_up=np.append(Z_up, Z_val)
-                if Z_val<Z_box_half:
-                    Z_down=np.append(Z_down, Z_val)
-    lim_up=np.average(Z_up)
-    lim_down=np.average(Z_down)
+                Zetas.append(Z_val)
+    Zetas = np.array(Zetas)
+    lim_up=np.average(Zetas[Zetas > np.mean(Zetas)])
+    lim_down=np.average(Zetas[Zetas < np.mean(Zetas)])
     cont=4
     delta=0
     atom=save-2
@@ -70,7 +66,7 @@ def dhydrate(gro_file_func):
         else:
             final_output.write(temp_file[i].rjust(44)+"\n")
     final_output.close()
-    os.remove("temp.gro")
+    #os.remove("temp.gro")
     print("The system has: "+str(cont-1+n_res_opt/3.)+ " residues")
     print("The system has: "+str(cont-4)+ " water molecules. Change this to the top file")
     print("The system has a lipid:water ratio of: "+str((cont-1)/(n_res_opt/3)))
